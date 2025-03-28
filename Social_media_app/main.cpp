@@ -13,6 +13,8 @@ int main() {
     app.createPost(2, "Bob's first post!");
     app.createPost(3, "Charlie's first post!");
     app.createPost(1, "Alice's first post!");
+    app.deleteUser(2);
+    app.getFeeds(2);
     cout<<"Browse feeds"<<endl;
     app.browseFeeds(4);
 

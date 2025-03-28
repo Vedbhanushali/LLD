@@ -19,6 +19,7 @@ private:
 
 public:
     void addUser(int userId, string name);
+    void deleteUser(int userId);
     void follow(int followerId, int followeeId);
     void unfollow(int followerId, int followeeId);
     void createPost(int userId, string content);

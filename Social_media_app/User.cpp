@@ -39,4 +39,8 @@ void User::deletePost(int postId) {
     }
 }
 
+void User::deleteAllPosts() {
+    posts.clear();
+}
+
 const vector<shared_ptr<Post>>& User::getPosts() const { return posts; }

@@ -25,6 +25,7 @@ public:
     const unordered_set<int>& getFollowing() const;
     void addPost(shared_ptr<Post> post);
     void deletePost(int postId);
+    void deleteAllPosts();
     const vector<shared_ptr<Post>>& getPosts() const;
 };
 

@@ -7,6 +7,37 @@ void SocialMedia::addUser(int userId, string name) {
     cout << "User " << name << " added to the system.\n";
 }
 
+
+
+void SocialMedia::deleteUser(int userId) {
+    // Using shared_ptr, once we remove references (from
+    // the user map ), the object is freed automatically. 
+    // deleting his posts
+    if (users.count(userId)) {
+        
+        //Method 1:
+        //removing all posts of the user
+        auto userPosts = users[userId]->getPosts();
+        for(auto post : userPosts) {
+            deletePost(userId,post->getId());
+        }
+        //removing user from the system
+        users.erase(userId); 
+        
+        // // Method 2:
+        // // remove all posts of the user
+        // auto userPosts = users[userId]->getPosts();
+        // for(auto post : userPosts) {
+        //     posts.erase(post->getId());
+        // }
+        // users[userId]->deleteAllPosts();
+        // //removing user from the system
+        // users.erase(userId); 
+    } else {
+        cout << "User with ID " << userId << " does not exist.\n";
+    }
+}
+
 void SocialMedia::follow(int followerId, int followeeId) {
     if (users.count(followerId) && users.count(followeeId)) {
         // checking if both follower and followee user exist
@@ -29,9 +60,12 @@ void SocialMedia::createPost(int userId, string content) {
 }
 
 void SocialMedia::deletePost(int userId, int postId) {
+    // Using shared_ptr, once we remove all references (from
+    // the posts map and the user's posts vector), the object
+    // is freed automatically.
     if (posts.count(postId) && users.count(userId)) {
-        users[userId]->deletePost(postId);
-        posts.erase(postId);
+        users[userId]->deletePost(postId); //remove reference from user post list
+        posts.erase(postId); //remove reference from posts map
     }
 }
 
