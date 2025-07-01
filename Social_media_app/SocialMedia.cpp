@@ -1,6 +1,5 @@
 #include "SocialMedia.h"
-#include "User.h"
-#include "Post.h"
+
 
 void SocialMedia::addUser(int userId, string name) {
     users[userId] = make_shared<User>(userId, name);

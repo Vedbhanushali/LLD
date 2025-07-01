@@ -5,8 +5,10 @@
 #include <memory>
 #include <unordered_set>
 #include <vector>
+#include "Post.h"
 
 using namespace std;
+
 class Post;
 
 class User {

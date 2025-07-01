@@ -4,6 +4,8 @@
 #include <iostream>
 #include <ctime>
 #include <memory>
+#include "User.h"
+
 using namespace std;
 
 // Forward declaration

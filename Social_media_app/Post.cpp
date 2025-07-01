@@ -1,5 +1,4 @@
 #include "Post.h"
-#include "User.h"
 
 Post::Post(int postId, string postContent, shared_ptr<User> postOwner)
     : id(postId), content(postContent), timestamp(time(0)), owner(postOwner) {}

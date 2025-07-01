@@ -1,5 +1,4 @@
 #include "User.h"
-#include "Post.h"
 
 User::User(int userId, string userName) : id(userId), name(userName) {}
 
