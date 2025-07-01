@@ -4,9 +4,10 @@
 #include <iostream>
 #include <vector>
 #include <memory>
+#include "Poll.h"
+
 
 using namespace std;
-
 class Poll;
 class User {
     private :
@@ -18,8 +19,8 @@ class User {
     const int& getId() const;
     const string& getName() const;
     const vector<shared_ptr<Poll>>& getPolls() const;
-    void createPoll(shared_ptr<Poll> poll);
-    void deletePoll(int pollId);
+    void addPoll(shared_ptr<Poll> poll);
+    void removePoll(int pollId);
     void updatePoll(int pollId,string question,vector<string> options);
 };
 

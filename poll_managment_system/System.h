@@ -5,6 +5,9 @@
 #include <unordered_map>
 #include <memory>
 #include <vector>
+#include "User.h"
+#include "Poll.h"
+
 using namespace std;
 
 class User;

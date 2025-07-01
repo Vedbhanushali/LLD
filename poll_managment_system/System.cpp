@@ -1,6 +1,4 @@
 #include "System.h"
-#include "User.h"
-#include "Poll.h"
 
 System::System() : pollCounter(0) {}
 
@@ -12,7 +10,7 @@ void System::createUser(int id, string name) {
 int System::createPoll(int userId, string questions, vector<string> options) {
     shared_ptr<Poll> poll = make_shared<Poll>(pollCounter++, questions, options);
     polls[poll->getId()] = poll;
-    users[userId]->createPoll(poll);
+    users[userId]->addPoll(poll);
     return poll->getId();
 }
 
@@ -52,7 +50,7 @@ void System::deletePoll(int userId,int pollId) {
         return;
     }
     //remvoing all references of poll from global and user's poll list
-    users[userId]->deletePoll(pollId);
+    users[userId]->removePoll(pollId);
     if (polls.count(pollId)) {
         polls.erase(pollId);
     } 

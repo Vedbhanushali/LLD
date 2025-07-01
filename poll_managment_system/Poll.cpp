@@ -1,6 +1,6 @@
 #include "Poll.h"
 
-Poll::Poll(int _id,string _question,vector<string> _options):id(_id), question(_question), options(_options), timestamp(time(0)) {}
+Poll::Poll(int id,string question,vector<string> options):id(id), question(question), options(options), timestamp(time(0)) {}
 const int& Poll::getId() const { return id;}
 const string& Poll::getQuestion() const { return question;}
 const vector<string>& Poll::getOptions() const { return options; }

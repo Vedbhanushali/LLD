@@ -6,9 +6,11 @@
 #include <unordered_map>
 #include <ctime>
 #include <memory>
-using namespace std;
+#include "User.h"
 
 class User; // Forward declaration
+
+using namespace std;
 class Poll {
     private:
         int id;
@@ -18,7 +20,7 @@ class Poll {
         shared_ptr<User> owner; 
         unordered_map<int, string> votes; // userId -> option
     public:
-    Poll(int _id,string _question,vector<string> _options);
+    Poll(int id,string question,vector<string> options);
     const int& getId() const;
     const string& getQuestion() const;
     const vector<string>& getOptions() const;
