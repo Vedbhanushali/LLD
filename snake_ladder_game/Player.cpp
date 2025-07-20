@@ -2,7 +2,18 @@
 
 Player::Player(string playerName) : name(playerName), position(1) {} // Start at position 1
 
-void Player::move(int steps) {
-    if (position+steps > 100)  return; // Cannot move beyond position 100
+int Player::move(int steps) {
     position += steps;
+}
+
+string Player::getName() const {
+    return name;
+}
+
+void Player::setPostion(int pos) {
+    position = pos;
+}
+
+int Player::getPosition() const {
+    return position;
 }

@@ -15,23 +15,23 @@ int GameEngine::rollDice() const {
 
 void GameEngine::play() {
     while(true) {
-        Player& currentPlayer = players[turn % players.size()];
-        cout<<currentPlayer.name<<" Player's turn press enter to continue"<<endl;
+        Player& currentPlayer = players[turn];
+        turn = (turn+1)%players.size();
+        cout<<currentPlayer.getName()<<" Player's turn press enter to continue"<<endl;
         cin.ignore(); // Wait for user input to roll the dice
         int rolled = rollDice();
         cout<<"Rolled: "<<rolled<<endl;
-        int newPosition = currentPlayer.position + rolled;
+        int newPosition = currentPlayer.move(rolled);
         if(newPosition > 100) {
-            cout<<"You rolled too high, stay at "<<currentPlayer.position<<endl;
+            cout<<"You rolled too high, stay at "<<currentPlayer.getPosition()<<endl;
         } else {
             newPosition = board.checkPosition(newPosition); // Check for snakes or ladders
-            currentPlayer.position = newPosition; // Update player's position
-            cout<<currentPlayer.name<<" moved to "<<currentPlayer.position<<endl;
-            if(currentPlayer.position == 100) {
-                cout<<currentPlayer.name<<" wins!"<<endl;
+            currentPlayer.setPostion(newPosition);  // Update player's position
+            cout<<currentPlayer.getName()<<" moved to "<<currentPlayer.getPosition()<<endl;
+            if(currentPlayer.getPosition() == 100) {
+                cout<<currentPlayer.getName()<<" wins!"<<endl;
                 break; // End the game if a player reaches 100
             }
         }
-        turn++; // Move to the next player
     }
 }

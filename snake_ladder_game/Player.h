@@ -5,10 +5,13 @@
 using namespace std;
 
 class Player {
+    string name;
+    int position;
     public:
-        string name;
-        int position;
         Player(string name);
-        void move(int steps);
+        string getName() const;
+        int getPosition() const;
+        int move(int steps);
+        void setPostion(int pos);
 };
 #endif
