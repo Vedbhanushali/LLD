@@ -3,6 +3,7 @@
 #include<vector>
 #include<queue>
 #include<windows.h>
+#include<thread>
 
 using namespace std;
 
@@ -22,20 +23,25 @@ class Job {
         return command;
     }
     bool operator > (const Job& job) const {
-        this->epoch_time > job.epoch_time;
+        return this->epoch_time > job.epoch_time;
     }
 };
 
 class Scheduler {
     private:
     priority_queue<Job,vector<Job>,greater<Job>> jobQueue;
-    void executeJob(const Job &job) {
+    vector<thread> jobThreads;
+
+    static void runCommand(Job job) {
         int return_code = system(job.getCommand().c_str());
-        if(return_code == 0) {
-            cout<<"Executed successful"<<endl;
+        if (return_code == 0) {
+            cout << "Executed successfully: " << job.getCommand() << endl;
         } else {
-            //can add return logic
+            cout << "Execution failed: " << job.getCommand() << endl;
         }
+    }
+    void executeJob(const Job& job) {
+        jobThreads.emplace_back(runCommand, job);
     }
     public:
     void addJobs(string command,long long epoch_time){
@@ -43,6 +49,7 @@ class Scheduler {
         cout<<"Job added"<<endl;
     }
     void run() {
+        cout<<"Scheduler running"<<endl;
         while(true) {
             if(jobQueue.empty()) break;
 
@@ -55,6 +62,12 @@ class Scheduler {
                 Sleep(1000);
             }
         }
+        // Wait for all job threads to finish
+        for (auto& t : jobThreads) {
+            if (t.joinable()) {
+                t.join();
+            }
+        }
     }
 };
 
@@ -65,7 +78,7 @@ int main() {
     long long epoch_time;
 
     while(true) {
-        cout<<"run or command";
+        cout<<"run or command ";
         getline(cin,command);
         if(command == "run") break;
         cout<<"epoch time ";
