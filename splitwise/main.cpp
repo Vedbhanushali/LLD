@@ -72,17 +72,18 @@ class Expense { //expense of a user
     int id;
     unordered_map<int,shared_ptr<Amount>> userBalances; // userId -> amount
     string title;
-    string imageUrl;
     string description;
     public:
-    Expense(int id,string title,string imageUrl, string description): id(id),title(title), imageUrl(imageUrl), description(description){}
+    Expense(int id,string title,string description): id(id),title(title), description(description){}
     void addUserBalance(int userId,shared_ptr<Amount> amount){
         userBalances[userId] = amount;
+    }
+    void settleExpense() {
+
     }
     void print() const {
         cout << "Expense Title: " << title << endl;
         cout << "Description: " << description << endl;
-        cout << "Image URL: " << imageUrl << endl;
         cout << "User Balances:" << endl;
         for(const auto& entry : userBalances) {
             const auto userId = entry.first;
@@ -98,14 +99,16 @@ class Group {
     int groupId;
     string name;
     string description;
-    string imageUrl;
     vector<shared_ptr<User>> members;
     vector<shared_ptr<Expense>> expenses;
 
     public:
-    Group(int groupId,string name, string description, string imageUrl):groupId(groupId), name(name), description(description), imageUrl(imageUrl) {}
+    Group(int groupId,string name, string description):groupId(groupId), name(name), description(description) {}
     int getId() const {
         return groupId;
+    }
+    string getName() const {
+        return name;
     }
     const vector<shared_ptr<User>>& getMembers() const {
         return members;
@@ -113,8 +116,16 @@ class Group {
     void addMember(shared_ptr<User> user) {
         members.emplace_back(user);
     }
-    void addGroupExpense(shared_ptr<Expense> expense) {
-        expenses.emplace_back(expense);
+    void addExpense() {
+        int id;
+        string title,desc;
+        cout<<"Enter id:"; cin>>id;
+        cout<<"Enter title:"; cin>>title;
+        cout<<"Enter description"; cin>>desc;
+        expenses.emplace_back(make_shared<Expense>(id,title,desc));
+    }
+    void editExpense(int expenseId) {
+
     }
 };
 
@@ -122,16 +133,21 @@ class Splitwise {
     unordered_map<int,shared_ptr<Group>> Groups;
     public:
     Splitwise(){}
-    void addExpense(int expenseId) {
-
-    }
-    void editExpense(int expenseId) {
-
-    }
-    void settleExpenses(int groupId) {
-
+    void addGroups(int id,string name,string desc) {
+        if(Groups.find(id)==Groups.end())
+            Groups[id] = make_shared<Group>(id,name,desc);
+        else
+            cout<<"Group alread exist"<<endl;
     }
     void addGroupExpense(int groupId) {
+        cout<<"Creating Expense of group"<<endl;
+        Groups[groupId]->addExpense();
+    }
+    void editExpense(int groupId,int expenseId) {
+        cout<<"Editing Expense of Group "<<Groups[groupId]->getName();
+        Groups[groupId]->editExpense(expenseId);
+    }
+    void settleExpenses(int groupId,int expenseId) {
 
     }
     void settleGroupExpense() {
@@ -142,5 +158,7 @@ class Splitwise {
 int main() {
     cout<<"Welcome to Splitwise"<<endl;
     Splitwise sw = Splitwise();
+    sw.addGroups(1,"Goa Trip","trip expense");
+    sw.addGroups(2,"Daily expense","day to day share");
     return 0;
 }
