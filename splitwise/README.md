@@ -1,19 +1,42 @@
 # Requirements
 
-There is concept of groups , groups have A,B,C users and multiple expenses, expenses has users-paid amount,
+There is concept of groups, groups have A,B,C users and multiple expenses, expenses has users-paid-owed amount.
 user can settle a expense, or settle group expense.
 
-USERS |  A  |  B  |  C  |cumulative| + mean spend, -mean not paid
-E1    |  5  |  6  | -11 |    0     |
-E2    |  3  | -10 |  7  |    0     |
-E3    |  5  |  3  |  19 |    27    |
-total |  13 |  -1 |  15 |    27    |
+| Expenses     |  A  |  B  |  C  | Bill Amount |
+| ---------    | --- | --- | --- | ----------- |
+| E1 - paid    |  5  |  6  |  0  |     11      |
+| E1 - owed    |  2  |  5  |  4  |     11      |
+| E1 - balance |  3  |  1  |  -4 |     11      |
+| E2 - paid    |  3  |  0  |  7  |     10      |
+| E2 - owed    |  3  |  3  |  4  |     10      |
+| E2 - balance |  0  |  -3 |  3  |     10      |
+| E3 - paid    |  5  |  3  |  19 |     27      |
+| E3 - owed    |  9  |  9  |  9  |     27      |
+| E3 - balance |  -4 |  -6 |  10 |     27      |
+| total balance|  -1 |  -8 |  9  |             |
 
-suppose expense to be divided equally
-27/3 = 9
+settling E1
+c owes 1 to B
+c owes 3 to A
 
-C:15,A:13,B:-1
-so settling expense is (high first clearing)
-C paid 15 has to pay 9 (settled) so will recieve - 6
-A paid 13 has to pay 9 (settled) so will recieve - 4
-D paid -1 (borrowed one) has to pay 10 so give 4 to A and 6 to C
+settling all Expenses
+A owes 1 to C
+B owes 8 to C
+
+## Algorithm
+
+here finaly balance of all user sum should be equal to zero
+for huge user base example
+
+| users | A | B | C | D | E | F |
+| --- | --- | --- | --- | --- | --- | --- |
+| balance | 90 | -70 | -40 | 80 | -100 | 40 |
+
+we have to develop graph of settle expense between user such that minimal edges are made
+A->E : 90
+D->B : 70
+F->C : 40
+D->E : 10
+
+will make most +ve and most -ve number to settle first will do this using heap.
