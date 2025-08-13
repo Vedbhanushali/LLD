@@ -34,9 +34,9 @@ for huge user base example
 | balance | 90 | -70 | -40 | 80 | -100 | 40 |
 
 we have to develop graph of settle expense between user such that minimal edges are made
-A->E : 90
-D->B : 70
-F->C : 40
-D->E : 10
+E owes -> A : 90
+B owes -> D : 70
+C owes -> F : 40
+E owes -> D : 10
 
 will make most +ve and most -ve number to settle first will do this using heap.
