@@ -29,7 +29,6 @@ static inline vector<string> tokenize(const string& str) {
         }
     }
 }
-/* ---------------- Helper function ends ---------------- */
 class Page {
     int id;
     string title;
@@ -50,7 +49,8 @@ class Page {
 class TrieNode {
     public:
     bool isTerminal;
-    unordered_map<char, shared_ptr<TrieNode>> children;  
+    unordered_map<char, shared_ptr<TrieNode>> children;
+    unordered_map<int,int> tokenBelongsToPageTimes; // pageId -> times
     TrieNode() {
         isTerminal = false;
     }
@@ -59,6 +59,7 @@ class TrieNode {
             if(child.second) child.second.reset();
         }
         children.clear();
+        tokenBelongsToPageTimes.clear();
     }
 };
 
@@ -71,10 +72,10 @@ class TrieService {
     ~TrieService() {
         if(root) root.reset();
     }
-    void indexPage(const Page& page) {
-        vector<string> tokens = tokenize(page.getContent());
+    void indexPage(const shared_ptr<Page> page) {
+        vector<string> tokens = tokenize(page->getContent());
         for(const string& token : tokens) {
-            addToken(token,page.getId());
+            addToken(token,page->getId());
         }
     }
     void addToken(const string&token,int pageId) {
@@ -87,46 +88,76 @@ class TrieService {
             }
             current = current->children[c];
         }
+        //reach the end of the token and trienode
         current->isTerminal = true; // mark the end of a token
+        current->tokenBelongsToPageTimes[pageId]++; // increment the count for this page
     }
-
+    // token -> <pageId -> times>
+    unordered_map<int,int>* TokenPageMapping(const string & token) {
+        if(token.empty()) return nullptr;
+        shared_ptr<TrieNode> current = root;
+        for(char c : token) {
+            if(current->children.find(c) == current->children.end()) {
+                //not found in children, token doesn't exist
+                return nullptr;
+            }
+            current = current->children[c];
+        }
+        if(current->isTerminal) {
+            return &(current->tokenBelongsToPageTimes);
+        }
+        return nullptr;
+    }
 };
 
 class SearchEngine {
     vector<shared_ptr<Page>> pages;
     shared_ptr<TrieService> trieService;
     public:
-    SearchEngine() {}
-    void addPage(int id, const string title, const string content) {
-        
+    SearchEngine(): trieService(make_shared<TrieService>()){}
+    void addPage(shared_ptr<Page> page) {
+        pages.push_back(page);
     }
-    void build() {}
+    void indexAllPages() {
+        //indexing all pages
+        for(const auto& page : pages) {
+            trieService->indexPage(page);
+        }
+    }
+    // AND search -> all terms must be present in page
+    // returns vector of (pageId, score)
+    vector<pair<int,int>> AndSearch(const string &query) {
+        vector<string> tokens = tokenize(query);
+        if(tokens.empty()) return {};
+
+
+    }
 };
 
 int main() {
     SearchEngine se;
 
     // Dummy pages 
-    se.addPage(1, "C++ Search Engine", "We build a tiny search se with a trie and inverted index in cpp.");
-    se.addPage(2, "Intro to Programming", "Programming basics include variables, loops, and data structures like the trie.");
-    se.addPage(3, "Data Science with Python", "Python is great for data science, but C++ (cpp) is powerful for performance.");
-    se.addPage(4, "Information Retrieval", "Search engines use indexing, ranking, tf-idf, and bm25 to score documents.");
-    se.addPage(5, "Object Oriented C++", "C++ supports classes, objects, and object oriented programming concepts.");
+    se.addPage(make_shared<Page>(1, "C++ Search Engine", "We build a tiny search se with a trie and inverted index in cpp."));
+    se.addPage(make_shared<Page>(2, "Intro to Programming", "Programming basics include variables, loops, and data structures like the trie."));
+    se.addPage(make_shared<Page>(3, "Data Science with Python", "Python is great for data science, but C++ (cpp) is powerful for performance."));
+    se.addPage(make_shared<Page>(4, "Information Retrieval", "Search engines use indexing, ranking, tf-idf, and bm25 to score documents."));
+    se.addPage(make_shared<Page>(5, "Object Oriented C++", "C++ supports classes, objects, and object oriented programming concepts."));
 
-    se.build();
+    se.indexAllPages();
 
     cout << "Enter query (space-separated terms, empty line to quit):\n";
     string line;
-    // while (true) {
-    //     cout << "> ";
-    //     if (!getline(cin, line)) break;
-    //     if (line.empty()) break;
+    while (true) {
+        cout << "> ";
+        if (!getline(cin, line)) break;
+        if (line.empty()) break;
 
-    //     auto results = se.search(line);
-    //     if (results.empty()) {
-    //         cout << "No results.\n";
-    //         continue;
-    //     }
+        auto results = se.AndSearch(line);
+        if (results.empty()) {
+            cout << "No results.\n";
+            continue;
+        }
 
     //     for (auto& r : results) {
     //         const Page* p = se.getPageById(r.first);
@@ -136,7 +167,7 @@ int main() {
     //              << " | " << p->title << "\n"
     //              << "  " << MiniSearchEngine::snippet(p->content) << "\n";
     //     }
-    // }
+    }
 
     return 0;
 }
