@@ -1,6 +1,7 @@
 #include<iostream>
 #include<unordered_map>
 #include<vector>
+#include<algorithm>
 #include<memory>
 
 using namespace std;
@@ -28,6 +29,7 @@ static inline vector<string> tokenize(const string& str) {
             curr.clear();
         }
     }
+    return tokens;
 }
 class Page {
     int id;
@@ -124,13 +126,37 @@ class SearchEngine {
             trieService->indexPage(page);
         }
     }
-    // AND search -> all terms must be present in page
-    // returns vector of (pageId, score)
-    vector<pair<int,int>> AndSearch(const string &query) {
+    // finds matched query in pages and rank them (e.g., by frequency of words matched).
+    vector<pair<int,int>> search(const string &query) {
         vector<string> tokens = tokenize(query);
         if(tokens.empty()) return {};
 
-
+        unordered_map<int,int> pageIdToScore; // pageId -> score
+        for(const string& token : tokens) {
+            auto mapping = trieService->TokenPageMapping(token);
+            if(!mapping) continue; // token not found
+            for(const auto& entry : *mapping) {
+                pageIdToScore[entry.first] += entry.second; // accumulate score
+            }
+        }
+        vector<pair<int,int>> scoredPages; // (score, pageId)
+        for(const auto &entry : pageIdToScore) {
+            scoredPages.emplace_back(entry.second, entry.first);
+        }
+        sort(scoredPages.begin(),scoredPages.end(), [](const pair<int,int>& a, const pair<int,int>& b) {
+            return a.first > b.first; // descending order by score
+        });
+        return scoredPages;
+    }
+    shared_ptr<Page> getPageById(int id) const {
+        for(const auto& page : pages) {
+            if(page->getId() == id) return page;
+        }
+        return nullptr;
+    }
+    static string snippet(const string& s, size_t maxLen = 120) {
+        if (s.size() <= maxLen) return s;
+        return s.substr(0, maxLen) + "...";
     }
 };
 
@@ -153,20 +179,20 @@ int main() {
         if (!getline(cin, line)) break;
         if (line.empty()) break;
 
-        auto results = se.AndSearch(line);
-        if (results.empty()) {
+        auto scoredPageIds = se.search(line);
+        if (scoredPageIds.empty()) {
             cout << "No results.\n";
             continue;
         }
 
-    //     for (auto& r : results) {
-    //         const Page* p = se.getPageById(r.first);
-    //         if (!p) continue;
-    //         cout << "docId=" << p->id
-    //              << " score=" << r.second
-    //              << " | " << p->title << "\n"
-    //              << "  " << MiniSearchEngine::snippet(p->content) << "\n";
-    //     }
+        for (auto& entry : scoredPageIds) {
+            auto p = se.getPageById(entry.second);
+            if (!p) continue;
+            cout << "PageId=" << p->getId() <<endl
+                 << " score " <<  entry.first << endl
+                 << " | " << p->getTitle() << endl
+                 << "  " << se.snippet(p->getContent()) << endl;
+        }
     }
 
     return 0;
