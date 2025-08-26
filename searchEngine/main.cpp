@@ -24,11 +24,12 @@ static inline vector<string> tokenize(const string& str) {
         if(isalnum(c)) {
             curr.push_back(c);
         } else {
-            if(!curr.empty()) continue;
+            if(curr.empty()) continue;
             tokens.emplace_back(curr);
             curr.clear();
         }
     }
+    if(!curr.empty()) tokens.push_back(curr);
     return tokens;
 }
 class Page {
